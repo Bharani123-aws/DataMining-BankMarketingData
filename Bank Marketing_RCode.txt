@@ -1,0 +1,617 @@
+#By: Bharani
+#Datamining Project: Bank Marketing dataset
+#R version 4.0.2 (2020-06-22)
+#bank-additional.csv
+--------------------------------------------------------------------------
+
+
+#Holdout method
+
+rm(list=ls()) #required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+fix(bank_add)
+
+library(ISLR)
+library(tree)
+set.seed(123)
+attach(bank_add)         #if we attach dataset to tree library no need to use $ symbol
+
+
+tree.bank=tree(y~.,bank_add)
+summary(tree.bank)                        
+plot(tree.bank)                                   #decision tree without labels
+text(tree.bank,pretty = 0)
+tree.bank              				  #more specific decision tree 
+tree.pred=predict(tree.bank,type="class")
+tree.pred
+#Create the confusion matrix
+table(tree.pred,bank_add$y)
+
+#Correct prediction rate
+mean(tree.pred==bank_add$y)    #0.9101724
+
+#Error prediction rate
+mean(tree.pred!=bank_add$y)    #0.08982763
+
+set.seed(123)
+train =sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+tree.bank=tree(y~.,training)
+
+summary(tree.bank)
+plot(tree.bank)
+text(tree.bank,pretty = 0)
+
+tree.pred = predict(tree.bank, testing, type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)    
+mean(tree.pred != test.label)    
+
+
+
+
+----------------------------------------------
+#bagging
+
+
+rm(list=ls())
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+
+library(randomForest)
+
+train =sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+
+
+
+set.seed(123)
+tree.ran=randomForest(y~.,training, ntree=100, mtry=10)
+tree.pred=predict(tree.ran,training,type="class")
+table(tree.pred, training$y)
+mean(tree.pred == training$y)    
+mean(tree.pred != training$y)  
+tree.pred=predict(tree.ran,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)    
+mean(tree.pred != test.label)    
+
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=500, mtry=10)
+tree.pred=predict(tree.ran,training,type="class")
+table(tree.pred, training$y)
+mean(tree.pred == training$y)    
+mean(tree.pred != training$y)  
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)  
+mean(tree.pred != test.label)  
+
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=800, mtry=10)
+tree.pred=predict(tree.ran,training,type="class")
+table(tree.pred, training$y)
+mean(tree.pred == training$y)    
+mean(tree.pred != training$y)  
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)  
+mean(tree.pred != test.label)  
+
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=1000, mtry=10)
+tree.pred=predict(tree.ran,training,type="class")
+table(tree.pred, training$y)
+mean(tree.pred == training$y)    
+mean(tree.pred != training$y)  
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)  
+mean(tree.pred == test.label)  
+mean(tree.pred != test.label)  
+
+
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=1500, mtry=10)
+tree.pred=predict(tree.ran,training,type="class")
+table(tree.pred, training$y)
+mean(tree.pred == training$y)    
+mean(tree.pred != training$y)  
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)  
+mean(tree.pred != test.label)  
+
+
+
+
+
+----------------------------------------------------------------------------
+
+#random forest
+
+
+rm(list=ls()) #required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+
+
+train =sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+
+set.seed(123)
+library(randomForest)
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=100, mtry=sqrt(10))
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)    # 0.9116945
+mean(tree.pred != test.label)    # 0.08830549
+
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=500, mtry=sqrt(10))
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)  #0.9045346
+mean(tree.pred != test.label)  # 0.09546539
+
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=800, mtry=sqrt(10))
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)  # 0.9093079
+mean(tree.pred != test.label)  #0.09069212
+
+set.seed(123)
+tree.bank=randomForest(y~.,training, ntree=1000, mtry=sqrt(10))
+tree.pred=predict(tree.bank,testing,type="class")
+table(tree.pred, test.label)
+mean(tree.pred == test.label)  #0.9093079
+mean(tree.pred != test.label)  #0.09069212
+
+
+
+-----------------------------------------------------------------------------
+
+#boosting
+
+rm(list=ls()) #required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+
+
+library(gbm)
+attach(bank_add)
+set.seed(123)
+bank_add$y=ifelse(bank_add$y=="yes",1,0)
+
+train=sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=y[-train]
+
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=100)
+tree.pred.prob=predict(tree.bank, training, n.trees=100, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(training$y, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #training error rate
+
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=100)
+tree.pred.prob=predict(tree.bank, testing, n.trees=100, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(test.label, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #test error rate
+
+
+set.seed(123)
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=500)
+tree.pred.prob=predict(tree.bank, training, n.trees=500, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(training$y, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #training error rate
+
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=500)
+tree.pred.prob=predict(tree.bank, testing,  n.trees=500, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+table(test.label, tree.pred)
+Tr.table=table(test.label, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #test error rate
+
+
+
+set.seed(123)
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=800)
+tree.pred.prob=predict(tree.bank, training, n.trees=800, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(training$y, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #training error rate
+
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=800)
+tree.pred.prob=predict(tree.bank, testing,  n.trees=800, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(test.label, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #test error rate
+
+
+set.seed(123)
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=1000)
+tree.pred.prob=predict(tree.bank, training, n.trees=1000, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(training$y, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #training error rate
+
+tree.bank=gbm(y~.,training, distribution="bernoulli",n.trees=1000)
+tree.pred.prob=predict(tree.bank, testing,  n.trees=1000, type="response")
+tree.pred=ifelse(tree.pred.prob>0.5, "Yes", "No")
+Tr.table=table(test.label, tree.pred)
+(Tr.table[1,1]+Tr.table[2,2])/sum(Tr.table)  
+(Tr.table[1,2]+Tr.table[2,1])/sum(Tr.table) #test error rate
+
+
+
+----------------------------------------------------------------------------------------
+
+#naive bayees
+
+rm(list=ls())#required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+ 
+library(e1071)	
+set.seed(123)
+attach(bank_add)
+Naive_Bayes_Model=naiveBayes(bank_add$y~.,bank_add)
+Naive_Bayes_Model
+NB_Predictions=predict(Naive_Bayes_Model,bank_add)
+table(NB_Predictions,bank_add$y)
+mean(NB_Predictions==bank_add$y)  #0.873513
+mean(NB_Predictions!=bank_add$y)  #0.126487
+
+
+
+set.seed(123)
+train=sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+NB_2=naiveBayes(y~.,training)
+NB_Predictions_2=predict(NB_2,testing)
+table(NB_Predictions_2,test.label)
+mean(NB_Predictions_2==test.label)     
+mean(NB_Predictions_2!=test.label)     
+
+
+set.seed(123)
+train=sample(1:nrow(bank_add),2500)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+NB_2=naiveBayes(y~.,training)
+NB_Predictions_2=predict(NB_2,testing)
+table(NB_Predictions_2,test.label)
+mean(NB_Predictions_2==test.label)     
+mean(NB_Predictions_2!=test.label)     
+
+
+
+------------------------------------------------------------------------------------------------------
+
+#SVM Linear
+rm(list=ls()) #required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+
+
+library(e1071)
+set.seed(123)
+
+
+train=sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+svmfit=svm(y~., data=training, kernel="linear", cost=0.01)
+summary(svmfit)
+
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y)  # 0.9018919
+ mean(train.predictions!=training$y)  #0.09810811
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   #0.9045346
+mean(test.predictions!=testing$y)   #0.09546539
+
+
+
+svmfit=svm(y~., data=training, kernel="linear", cost=0.1)
+summary(svmfit)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y)  #0.9127027
+ mean(train.predictions!=training$y)  #0.0872973
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   # 0.9116945
+mean(test.predictions!=testing$y)  #0.08830549
+
+
+svmfit=svm(y~., data=training, kernel="linear", cost=1)
+summary(svmfit)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y)  #0.9156757
+mean(train.predictions!=training$y)  #0.08432432
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   # 0.9140811
+mean(test.predictions!=testing$y)  #0.08591885
+
+
+svmfit=svm(y~., data=training, kernel="linear", cost=10)
+summary(svmfit)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y)  #0.9159459
+ mean(train.predictions!=training$y)  #0.08405405
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   # 0.9140811
+mean(test.predictions!=testing$y)  #0.08591885
+
+
+svmfit=svm(y~., data=training, kernel="linear", cost=100)
+summary(svmfit)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y)  #0.9159459
+ mean(train.predictions!=training$y)  #0.08405405
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   # 0.9140811
+mean(test.predictions!=testing$y)  #0.08591885
+
+
+----------------------------------------------------------------------------------
+#SVM Radial
+
+rm(list=ls()) #required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+
+
+library(e1071)
+set.seed(123)
+
+
+train=sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+
+
+
+svmfit=svm(y~., data=training, kernel="radial", gamma=0.01, cost=0.1)
+summary(svmfit)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) 
+mean(train.predictions!=training$y) 
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)    
+mean(test.predictions!=testing$y) 
+
+
+svmfit=svm(y~., data=training, kernel="radial", gamma=1, cost=1)
+summary(svmfit)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) 
+mean(train.predictions!=training$y) 
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   
+mean(test.predictions!=testing$y)  
+
+
+
+svmfit=svm(y~., data=training, kernel="radial", gamma=0.5, cost=10)
+summary(svmfit)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) 
+mean(train.predictions!=training$y)  
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   
+mean(test.predictions!=testing$y)   
+
+
+
+svmfit=svm(y~., data=training, kernel="radial", gamma=1, cost=10)
+summary(svmfit)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) 
+mean(train.predictions!=training$y)  
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   
+mean(test.predictions!=testing$y)   
+
+
+
+svmfit=svm(y~., data=training, kernel="radial", gamma=0.5, cost=0.01)
+summary(svmfit)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) #0.89
+mean(train.predictions!=training$y) #0.11
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   #0.8949881
+mean(test.predictions!=testing$y)   #0.1050119
+
+
+svmfit=svm(y~., data=training, kernel="radial", gamma=1, cost=100)
+summary(svmfit)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) #0.89
+mean(train.predictions!=training$y) #0.11
+
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)   #0.8949881
+mean(test.predictions!=testing$y)   #0.1050119
+
+
+
+-------------------------------------------------------------------------
+
+#SVM polynomial
+
+rm(list=ls()) #required to clean the prev data to get the good result
+bank_marketing=read.csv('C:\\Users\\bhara\\Desktop\\DMProject\\bank-additional.csv',header=T,sep=';',stringsAsFactors = TRUE,na.strings ="?")
+bank_add=na.omit(bank_marketing)
+
+
+library(e1071)
+set.seed(123)
+
+train=sample(1:nrow(bank_add),3700)
+training=bank_add[train,]
+testing=bank_add[-train,]
+test.label=bank_add$y[-train]
+
+svmfit=svm(y~., data=training, kernel="polynomial", cost=0.01,gamma=0.1)
+
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) # 0.9105405
+mean(train.predictions!=training$y)  # 0.08945946
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)    #0.9069212
+mean(test.predictions!=testing$y)   #0.09307876
+
+
+
+svmfit=svm(y~., data=training, kernel="polynomial", cost=0.1,gamma=0.5)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) # 0.9972973
+mean(train.predictions!=training$y)  # 0.002702703
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)     #0.8949881
+mean(test.predictions!=testing$y)    #0.1050119
+
+
+
+svmfit=svm(y~., data=training, kernel="polynomial", cost=1,gamma=1)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) # 1
+mean(train.predictions!=training$y)  # 0
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)     #0.8830549
+mean(test.predictions!=testing$y)    #0.1169451
+
+
+svmfit=svm(y~., data=training, kernel="polynomial", cost=10,gamma=0.01)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) # 0.932973
+mean(train.predictions!=training$y)  # 0.06702703
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)     #0.9069212
+mean(test.predictions!=testing$y)    #0.09307876
+
+
+set.seed(123) 
+svmfit=svm(y~., data=training, kernel="polynomial", cost=100,gamma=0.01)
+train.predictions = predict(svmfit,training)
+train.table = table(Predict = train.predictions, Truth = training$y)
+train.table
+mean(train.predictions==training$y) # 0.932973
+mean(train.predictions!=training$y)  # 0.06702703
+test.predictions = predict(svmfit,testing)
+test.table = table(Predict = test.predictions, Truth = testing$y)
+test.table
+mean(test.predictions==testing$y)     #0.9260143
+mean(test.predictions!=testing$y)    #0.07398568
+
+
+
+
